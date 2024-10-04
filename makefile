@@ -18,14 +18,23 @@ CFLAGS += $(INCLUDE) $(ASAN_FLAGS) -DDEBUG -D_FORTIFY_SOURCES=3 -ggdb -g3
 
 all: base
 
-base: main.o stack.o helpful_functions.o logger.o my_asserts.o work_with_doubles.o
-	@$(CC) $(LINKER_FLAGS) $(CFLAGS) main.o stack.o helpful_functions.o logger.o my_asserts.o work_with_doubles.o -o stack
+base: main.o stack.o dump.o helpful_functions.o logger.o my_asserts.o work_with_doubles.o canary_protection.o hash_protection.o
+	@$(CC) $(LINKER_FLAGS) $(CFLAGS) main.o stack.o dump.o helpful_functions.o logger.o my_asserts.o work_with_doubles.o hash_protection.o canary_protection.o -o stack
 
 main.o: source/main.cpp
 	@$(CC) $(CFLAGS) -c source/main.cpp
 
 stack.o: source/stack.cpp
 	@$(CC) $(CFLAGS) -c source/stack.cpp
+
+dump.o: source/dump.cpp
+	@$(CC) $(CFLAGS) -c source/dump.cpp
+
+canary_protection.o: source/canary_protection.cpp
+	@$(CC) $(CFLAGS) -c source/canary_protection.cpp
+
+hash_protection.o: source/hash_protection.cpp
+	@$(CC) $(CFLAGS) -c source/hash_protection.cpp
 
 helpful_functions.o: MyMiniLib/source/helpful_functions.cpp
 	@$(CC) $(CFLAGS) -c MyMiniLib/source/helpful_functions.cpp
