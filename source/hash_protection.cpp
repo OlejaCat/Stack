@@ -1,16 +1,23 @@
 #include "hash_protection.h"
 
 #include <stdint.h>
+#include <time.h>
+#include <stdlib.h>
 
-#include "logger.h"
+// static --------------------------------------------------------------------------------------------------------------
 
+uint8_t HASH_FACTOR;
+
+void initHash(void);
+
+// public --------------------------------------------------------------------------------------------------------------
 
 hash_type calculateHash(const void* data, const size_t size) {
     hash_type hash = 0;
     const uint8_t* bytes = (const uint8_t*)data;
 
     for (size_t i = 0; i < size; i++) {
-        hash = hash * 31 + bytes[i];
+        hash = hash * HASH_FACTOR + bytes[i];
     }
 
     return hash;
@@ -18,9 +25,6 @@ hash_type calculateHash(const void* data, const size_t size) {
 
 HashProtectionState checkHash(const hash_type hash_given, const void* data, const size_t size)
 {
-    Log(LogLevel_INFO, "given: %llu", hash_given);
-    Log(LogLevel_INFO, "wanted: %llu", calculateHash(data, size));
-
     if (calculateHash(data, size) != hash_given)
     {
         return HashProtectionState_CORRUPTED;
@@ -29,6 +33,15 @@ HashProtectionState checkHash(const hash_type hash_given, const void* data, cons
     return HashProtectionState_OK;
 }
 
+
+// static --------------------------------------------------------------------------------------------------------------
+
+void initHash(void)
+{
+    srand((unsigned int)time(0));
+
+    HASH_FACTOR = (uint8_t)(rand() % 64);
+}
 
 
 
