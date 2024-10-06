@@ -8,7 +8,7 @@ int main()
 {
     openLogFile("logger.txt");
 
-    Stack* st = stackCtor(sizeof(int));
+    Stack* st = stackCtor();
 
     for (int i = 0; i < 257; i++)
     {

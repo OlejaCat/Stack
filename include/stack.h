@@ -19,7 +19,7 @@ typedef enum StackErrorOperation
 
 typedef struct Stack Stack;
 
-Stack* stackCtor(size_t size_of_element);
+Stack* stackCtor();
 StackErrorOperation stackDtor(Stack* stack);
 StackErrorOperation stackPush(Stack* stack, stack_type item);
 StackErrorOperation stackPop(Stack* stack, stack_type* item);

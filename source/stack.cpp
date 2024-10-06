@@ -38,14 +38,14 @@ static StackErrorOperation stackResizeDown(Stack* stack);
 // public --------------------------------------------------------------------------------------------------------------
 
 
-Stack* stackCtor(size_t size_of_element)
+Stack* stackCtor()
 {
     Stack* stack = (Stack*)calloc(1, sizeof(Stack));
 
     generateCanary(stack->struct_canary_start);
 
     stack->data             = NULL;
-    stack->size_of_element  = size_of_element;
+    stack->size_of_element  = sizeof(stack_type);
     stack->size_of_data     = 0;
     stack->max_size_of_data = START_SIZE;
     stack->data_hash        = 0;
@@ -77,6 +77,8 @@ StackErrorOperation stackDtor(Stack *stack)
 
     freeCanary(stack->data);
     free(stack);
+
+    stack = NULL;
 
     return StackErrorOperation_SUCCESS;
 }
