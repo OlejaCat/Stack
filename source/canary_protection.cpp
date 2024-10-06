@@ -1,6 +1,7 @@
 #include "canary_protection.h"
 
 #include <string.h>
+#include <time.h>
 
 
 // static --------------------------------------------------------------------------------------------------------------
@@ -73,6 +74,8 @@ void freeCanary(void* address)
 
 void generateCanary(uint8_t* canary)
 {
+    srand((unsigned int)time(0));
+
     for (size_t i = 0; i < SIZE_OF_CANARY; i++)
     {
         canary[i] = (uint8_t)(rand() % 256);
@@ -95,11 +98,23 @@ CanaryProtectionState checkDataCanaries(void*    data,
     return CanaryProtectionState_OK;
 }
 
+CanaryProtectionState checkStructCanaries(uint8_t* canary_start,
+                                          uint8_t* canary_end)
+{
+    if (memcmp(canary_start, canary_end, SIZE_OF_CANARY) != 0)
+    {
+        return CanaryProtectionState_CORRUPTED;
+    }
+
+    return CanaryProtectionState_OK;
+}
+
 
 // static --------------------------------------------------------------------------------------------------------------
 
 
-uint8_t* getRawData(void* data) {
+uint8_t* getRawData(void* data)
+{
     return ((uint8_t*)data - SIZE_OF_CANARY);
 }
 

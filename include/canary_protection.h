@@ -32,4 +32,7 @@ CanaryProtectionState checkDataCanaries(void*    data,
                                         uint8_t* canary_start,
                                         uint8_t* canary_end);
 
+CanaryProtectionState checkStructCanaries(uint8_t* canary_start,
+                                          uint8_t* canary_end);
+
 #endif // CANARY_PROTECTION_H

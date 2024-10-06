@@ -12,6 +12,6 @@ typedef enum HashProtectionState
 } HashProtectionState;
 
 hash_type calculateHash(const void* data, size_t size);
-HashProtectionState checkDataHash(hash_type hash_given, const void* data, size_t size);
+HashProtectionState checkHash(hash_type hash_given, const void* data, size_t size);
 
 #endif // HASH_PROTECTION_H

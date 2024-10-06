@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "dump.h"
 #include "canary_protection.h"
@@ -20,10 +21,12 @@ typedef struct Stack
     size_t      max_size_of_data;
     uint8_t     data_canary_start[SIZE_OF_CANARY];
     uint8_t     data_canary_end[SIZE_OF_CANARY];
-    uint8_t     struct_canary_end[SIZE_OF_CANARY];
     hash_type   data_hash;
+    hash_type   struct_hash;
+    uint8_t     struct_canary_end[SIZE_OF_CANARY];
 } Stack;
 
+static const size_t SIZE_OF_STACK_FOR_HASH = sizeof(Stack) - 2 * sizeof(hash_type);
 
 static const size_t START_SIZE   = 4;
 static const size_t SCALE_FACTOR = 2;
@@ -50,7 +53,7 @@ Stack* stackCtor(size_t size_of_element)
     generateCanary(stack->data_canary_start);
     generateCanary(stack->data_canary_end);
 
-    generateCanary(stack->struct_canary_end);
+    memcpy(stack->struct_canary_end, stack->struct_canary_start, SIZE_OF_CANARY);
 
     stack_type* data_pointer = (stack_type*)canaryCalloc(START_SIZE,
                                                          stack->size_of_element,
@@ -61,7 +64,8 @@ Stack* stackCtor(size_t size_of_element)
         return NULL;
     }
 
-    stack->data = data_pointer;
+    stack->data        = data_pointer;
+    stack->struct_hash = calculateHash(stack, SIZE_OF_STACK_FOR_HASH);
 
     return stack;
 }
@@ -90,7 +94,8 @@ StackErrorOperation stackPush(Stack *stack, stack_type item)
         stackResizeUp(stack);
     }
 
-    stack->data_hash = calculateHash(stack->data, stack->size_of_element * stack->max_size_of_data);
+    stack->data_hash   = calculateHash(stack->data, stack->size_of_element * stack->max_size_of_data);
+    stack->struct_hash = calculateHash(stack, SIZE_OF_STACK_FOR_HASH);
 
     STACK_ASSERT(stack, StackErrorOperation_ERROR_PUSH);
 
@@ -112,7 +117,8 @@ StackErrorOperation stackPop(Stack *stack, stack_type* item)
     stack->size_of_data--;
     stackResizeDown(stack);
 
-    stack->data_hash = calculateHash(stack->data, stack->size_of_element * stack->max_size_of_data);
+    stack->data_hash   = calculateHash(stack->data, stack->size_of_element * stack->max_size_of_data);
+    stack->struct_hash = calculateHash(stack, SIZE_OF_STACK_FOR_HASH);
 
     STACK_ASSERT(stack, StackErrorOperation_ERROR_POP);
 

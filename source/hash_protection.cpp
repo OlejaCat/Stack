@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#include "logger.h"
+
 
 hash_type calculateHash(const void* data, const size_t size) {
     hash_type hash = 0;
@@ -14,8 +16,11 @@ hash_type calculateHash(const void* data, const size_t size) {
     return hash;
 }
 
-HashProtectionState checkDataHash(const hash_type hash_given, const void* data, const size_t size)
+HashProtectionState checkHash(const hash_type hash_given, const void* data, const size_t size)
 {
+    Log(LogLevel_INFO, "given: %llu", hash_given);
+    Log(LogLevel_INFO, "wanted: %llu", calculateHash(data, size));
+
     if (calculateHash(data, size) != hash_given)
     {
         return HashProtectionState_CORRUPTED;
