@@ -41,7 +41,6 @@ int stackAssertFunction(Stack*              stack,
 {
     assertStrict(file_name     != NULL);
     assertStrict(function_name != NULL);
-    assertStrict(stack         != NULL);
 
     if (!stack)
     {
@@ -95,11 +94,10 @@ static StackError stackWorkingState(Stack* stack)
             return StackError_BAD_STACK; \
         }
 
-    bool stack_is_null         = stack == NULL;
     bool size_of_data_too_big  = stack->size_of_data > stack->max_size_of_data;
     bool null_pointer_to_data  = stack->data == NULL;
 
-    __FAST_IF__(size_of_data_too_big || null_pointer_to_data || stack_is_null, 1)
+    __FAST_IF__(size_of_data_too_big || null_pointer_to_data, 1)
 
     CanaryProtectionState canary_data_broken = checkDataCanaries(stack->data,
                                                                  stack->max_size_of_data * stack->size_of_element,

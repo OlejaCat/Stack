@@ -18,7 +18,7 @@ hash_type calculateHash(const void* data, const size_t size) {
     const uint8_t* bytes = (const uint8_t*)data;
 
     for (size_t i = 0; i < size; i++) {
-        hash = hash * HASH_FACTOR + bytes[i];
+        hash = hash + bytes[i];
     }
 
     return hash;
