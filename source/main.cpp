@@ -10,6 +10,12 @@ int main()
 
     Stack* st = stackCtor();
 
+    uint8_t* ptr = (uint8_t*)st;
+
+    *(ptr + 12) = 100;
+
+    Log(LogLevel_INFO, "We are working");
+
     for (int i = 0; i < 257; i++)
     {
         Log(LogLevel_DEBUG, "i entered: %d", i);

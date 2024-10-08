@@ -11,7 +11,7 @@ CFLAGS += -Waggressive-loop-optimizations -Wmissing-declarations -Wcast-align -W
 endif
 
 LINKER_FLAGS = -lm
-ASAN_FLAGS = -fsanitize=address,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,integer-divide-by-zero,leak,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
+# ASAN_FLAGS = -fsanitize=address,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,integer-divide-by-zero,leak,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
 
 INCLUDE = -I MyMiniLib/include -I include -I build
 CFLAGS += $(INCLUDE) $(ASAN_FLAGS) -DDEBUG -D_FORTIFY_SOURCES=3 -ggdb -g3

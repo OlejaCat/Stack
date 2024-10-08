@@ -6,6 +6,8 @@
 #include "canary_protection.h"
 #include "hash_protection.h"
 
+#include "logger.h"
+
 
 // static --------------------------------------------------------------------------------------------------------------
 
@@ -101,6 +103,17 @@ static StackError stackWorkingState(Stack* stack)
 
     __FAST_IF__(size_of_data_too_big || null_pointer_to_data || stack_is_null, 1)
 
+    CanaryProtectionState canary_struct_broken = checkStructCanaries(stack->struct_canary_start,
+                                                                     stack->struct_canary_end);
+
+    __FAST_IF__(canary_struct_broken, CanaryProtectionState_CORRUPTED)
+
+    HashProtectionState hash_struct_broken = checkHash(stack->struct_hash,
+                                                       stack,
+                                                       SIZE_OF_STACK_FOR_HASH);
+
+    __FAST_IF__(hash_struct_broken, HashProtectionState_CORRUPTED)
+
     CanaryProtectionState canary_data_broken = checkDataCanaries(stack->data,
                                                                  stack->max_size_of_data * stack->size_of_element,
                                                                  stack->data_canary_start,
@@ -108,22 +121,11 @@ static StackError stackWorkingState(Stack* stack)
 
     __FAST_IF__(canary_data_broken, CanaryProtectionState_CORRUPTED)
 
-    CanaryProtectionState canary_struct_broken = checkStructCanaries(stack->struct_canary_start,
-                                                                     stack->struct_canary_end);
-
-    __FAST_IF__(canary_struct_broken, CanaryProtectionState_CORRUPTED)
-
     HashProtectionState hash_data_broken = checkHash(stack->data_hash,
                                                      stack->data,
                                                      stack->max_size_of_data * stack->size_of_element);
 
     __FAST_IF__(hash_data_broken, HashProtectionState_CORRUPTED)
-
-    HashProtectionState hash_struct_broken = checkHash(stack->struct_hash,
-                                                       stack,
-                                                       SIZE_OF_STACK_FOR_HASH);
-
-    __FAST_IF__(hash_struct_broken, HashProtectionState_CORRUPTED)
 
     return StackError_SUCCESS;
 
