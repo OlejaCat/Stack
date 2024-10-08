@@ -25,7 +25,8 @@ void* canaryRealloc(void*    address,
                     uint8_t* data_canary_start,
                     uint8_t* data_canary_end);
 
-void generateCanary(uint8_t* canary);
+void generateCanaryRandom(uint8_t* canary);
+void generateCanaryStatic(uint8_t* canary);
 
 CanaryProtectionState checkDataCanaries(void*    data,
                                         size_t   size_of_data,

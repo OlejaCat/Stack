@@ -9,6 +9,8 @@
 
 uint8_t* getRawData(void* data);
 
+const uint8_t CANARY[SIZE_OF_CANARY] = {'B', 'A', 'D', 'C', 'O', 'F', 'F', 'E'};
+
 
 // public --------------------------------------------------------------------------------------------------------------
 
@@ -72,7 +74,7 @@ void freeCanary(void* address)
 }
 
 
-void generateCanary(uint8_t* canary)
+void generateCanaryRandom(uint8_t* canary)
 {
     srand((unsigned int)time(0));
 
@@ -81,6 +83,16 @@ void generateCanary(uint8_t* canary)
         canary[i] = (uint8_t)(rand() % 256);
     }
 }
+
+
+void generateCanaryStatic(uint8_t* canary)
+{
+    for (size_t i = 0; i < SIZE_OF_CANARY; i++)
+    {
+        canary[i] = CANARY[i];
+    }
+}
+
 
 CanaryProtectionState checkDataCanaries(void*    data,
                                         size_t   size_of_data,

@@ -8,8 +8,6 @@
 #include "canary_protection.h"
 #include "hash_protection.h"
 
-#include "logger.h"
-
 
 // static --------------------------------------------------------------------------------------------------------------
 
