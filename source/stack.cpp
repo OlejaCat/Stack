@@ -31,8 +31,7 @@ static const size_t SIZE_OF_STACK_FOR_HASH = sizeof(Stack) - 2 * sizeof(hash_typ
 static const size_t START_SIZE   = 4;
 static const size_t SCALE_FACTOR = 2;
 
-static StackErrorOperation stackResizeUp(Stack* stack);
-static StackErrorOperation stackResizeDown(Stack* stack);
+static StackErrorOperation stackResize(Stack* stack, double scale_factor);
 
 
 // public --------------------------------------------------------------------------------------------------------------
@@ -93,7 +92,7 @@ StackErrorOperation stackPush(Stack *stack, stack_type item)
 
     if (stack->size_of_data == stack->max_size_of_data)
     {
-        stackResizeUp(stack);
+        stackResize(stack, SCALE_FACTOR);
     }
 
     stack->data_hash   = calculateHash(stack->data, stack->size_of_element * stack->max_size_of_data);
@@ -117,7 +116,12 @@ StackErrorOperation stackPop(Stack *stack, stack_type* item)
     *item = stack->data[stack->size_of_data - 1];
 
     stack->size_of_data--;
-    stackResizeDown(stack);
+
+    if (stack->size_of_data * (SCALE_FACTOR * SCALE_FACTOR) == stack->max_size_of_data
+     && stack->max_size_of_data != START_SIZE)
+    {
+        stackResize(stack, 1.0 / SCALE_FACTOR);
+    }
 
     stack->data_hash   = calculateHash(stack->data, stack->size_of_element * stack->max_size_of_data);
     stack->struct_hash = calculateHash(stack, SIZE_OF_STACK_FOR_HASH);
@@ -131,33 +135,15 @@ StackErrorOperation stackPop(Stack *stack, stack_type* item)
 // static --------------------------------------------------------------------------------------------------------------
 
 
-static StackErrorOperation stackResizeUp(Stack* stack)
+static StackErrorOperation stackResize(Stack* stack, double scale_factor)
 {
-    stack->max_size_of_data *= SCALE_FACTOR;
+    stack->max_size_of_data = (size_t)((double)stack->max_size_of_data * scale_factor);
 
     stack->data = (stack_type*)canaryRealloc(stack->data,
                                              stack->size_of_data * stack->size_of_element,
                                              stack->max_size_of_data * stack->size_of_element,
                                              stack->data_canary_start,
                                              stack->data_canary_end);
-
-    return StackErrorOperation_SUCCESS;
-}
-
-
-static StackErrorOperation stackResizeDown(Stack* stack)
-{
-    if (stack->size_of_data * (SCALE_FACTOR * SCALE_FACTOR) == stack->max_size_of_data
-     && stack->max_size_of_data != START_SIZE)
-    {
-        stack->max_size_of_data /= SCALE_FACTOR;
-
-        stack->data = (stack_type*)canaryRealloc(stack->data,
-                                                 stack->size_of_data * stack->size_of_element,
-                                                 stack->max_size_of_data * stack->size_of_element,
-                                                 stack->data_canary_start,
-                                                 stack->data_canary_end);
-    }
 
     return StackErrorOperation_SUCCESS;
 }
