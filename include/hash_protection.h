@@ -11,13 +11,13 @@ typedef enum HashProtectionState
     HashProtectionState_CORRUPTED = 1,
 } HashProtectionState;
 
-#ifndef NDEBUG
+#ifdef _HASH_PROTECT
 #define checkHash(hash_given, data, size) checkHash_(hash_given, data, size);
 #else
-#define checkHash(hash_given, data, size) HasHashProtectionState_OK;
+#define checkHash(hash_given, data, size) HashProtectionState_OK;
 #endif
 
-#ifndef NDEBUG
+#ifdef _HASH_PROTECT
 #define calculateHash(data, size) calculateHash_(data, size);
 #else
 #define calculateHash(data, size) 0;

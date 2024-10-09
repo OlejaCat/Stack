@@ -10,12 +10,16 @@ int main()
 
     Stack* st = stackCtor();
 
-    for (int i = 0; i < 257; i++)
+    uint8_t* ptr = (uint8_t*) st;
+
+    *(ptr + 15) = 10;
+
+    for (uint8_t i = 0; i < 220; i++)
     {
-        stackPush(st, 3802 + i);
+        stackPush(st, i);
     }
 
-    for (int i = 0; i < 257; i++)
+    for (int i = 0; i < 200; i++)
     {
         stack_type x = 0;
         stackPop(st, &x);

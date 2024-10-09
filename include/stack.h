@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-typedef int stack_type;
+typedef uint8_t stack_type;
 
 typedef enum StackErrorOperation
 {

@@ -4,33 +4,33 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#ifndef NDEBUG
+#ifdef _CANARY_PROTECT
 #define generateCanaryRandom(pointer_canary) generateCanaryRandom_(pointer_canary);
 #else
 #define generateCanaryRandom(pointer_canary) ;
 #endif
 
-#ifndef NDEBUG
+#ifdef _CANARY_PROTECT
 #define generateCanaryStatic(pointer_canary) generateCanaryStatic__(pointer_canary);
 #else
 #define generateCanaryStatic(pointer_canary) ;
 #endif
 
-#ifndef NDEBUG
+#ifdef _CANARY_PROTECT
 #define checkDataCanaries(data, size_of_data, canary_start, canary_end) \
     checkDataCanaries_(data, size_of_data, canary_start, canary_end);
 #else
-#define checkDataCanaries(data, size_of_data, canary_start, canary_end) CanaCanaryProtectionState_OK;
+#define checkDataCanaries(data, size_of_data, canary_start, canary_end) CanaryProtectionState_OK;
 #endif
 
-#ifndef NDEBUG
+#ifdef _CANARY_PROTECT
 #define checkStructCanaries(canary_start, canary_end) \
     checkStructCanaries_(canary_start, canary_end);
 #else
-#define checkStructCanaries(canary_start, canary_end) CanaCanaryProtectionState_OK;
+#define checkStructCanaries(canary_start, canary_end) CanaryProtectionState_OK;
 #endif
 
-#ifndef NDEBUG
+#ifdef _CANARY_PROTECT
 #define canaryCalloc(start_size, size_of_element, data_canary_start, data_canary_end) \
     canaryCalloc_(start_size, size_of_element, data_canary_start, data_canary_end);
 #else
@@ -38,7 +38,7 @@
     calloc(start_size, size_of_element);
 #endif
 
-#ifndef NDEBUG
+#ifdef _CANARY_PROTECT
 #define canaryRealloc(start, original_size, size_need, data_canary_start, data_canary_end) \
     canaryRealloc_(start, original_size, size_need, data_canary_start, data_canary_end);
 #else

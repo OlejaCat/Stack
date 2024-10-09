@@ -9,6 +9,13 @@
 #include "hash_protection.h"
 
 
+#ifdef _CANARY_PROTECT
+#define initializeCanaries(stack) initializeCanaries_(stack)
+#else
+#define initializeCanaries(stack) ;
+#endif
+
+
 // static --------------------------------------------------------------------------------------------------------------
 
 
@@ -39,6 +46,8 @@ static const size_t SCALE_FACTOR = 2;
 
 static StackErrorOperation stackResize(Stack* stack, double scale_factor);
 
+static void initializeCanaries_(Stack* stack);
+
 
 // public --------------------------------------------------------------------------------------------------------------
 
@@ -49,18 +58,13 @@ Stack* stackCtor_(const char* file_name,
 {
     Stack* stack = (Stack*)calloc(1, sizeof(Stack));
 
-    generateCanaryRandom(stack->struct_canary_start);
+    initializeCanaries(stack);
 
     stack->data             = NULL;
     stack->size_of_element  = sizeof(stack_type);
     stack->size_of_data     = 0;
     stack->max_size_of_data = START_SIZE;
     stack->data_hash        = 0;
-
-    generateCanaryRandom(stack->data_canary_start);
-    generateCanaryRandom(stack->data_canary_end);
-
-    memcpy(stack->struct_canary_start, stack->struct_canary_end, SIZE_OF_CANARY);
 
     stack_type* data_pointer = (stack_type*)canaryCalloc(START_SIZE,
                                                          stack->size_of_element,
@@ -159,4 +163,15 @@ static StackErrorOperation stackResize(Stack* stack, double scale_factor)
                                              stack->data_canary_end);
 
     return StackErrorOperation_SUCCESS;
+}
+
+
+static void initializeCanaries_(Stack* stack)
+{
+    generateCanaryRandom(stack->struct_canary_start);
+
+    generateCanaryRandom(stack->data_canary_start);
+    generateCanaryRandom(stack->data_canary_end);
+
+    memcpy(stack->struct_canary_start, stack->struct_canary_end, SIZE_OF_CANARY);
 }
