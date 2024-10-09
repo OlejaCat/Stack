@@ -19,7 +19,11 @@ typedef enum StackErrorOperation
 
 typedef struct Stack Stack;
 
-Stack* stackCtor();
+#define stackCtor() stackCtor_(__FILE__, __LINE__, __PRETTY_FUNCTION__)
+
+Stack* stackCtor_(const char* file_name,
+                  int         line,
+                  const char* function_name);
 StackErrorOperation stackDtor(Stack* stack);
 StackErrorOperation stackPush(Stack* stack, stack_type item);
 StackErrorOperation stackPop(Stack* stack, stack_type* item);

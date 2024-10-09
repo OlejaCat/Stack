@@ -9,14 +9,19 @@
 
 // static --------------------------------------------------------------------------------------------------------------
 
-
 typedef struct Stack
 {
     uint8_t     struct_canary_start[SIZE_OF_CANARY];
+
     stack_type* data;
     size_t      size_of_element;
     size_t      size_of_data;
     size_t      max_size_of_data;
+
+    const char* file_name;
+    int         line;
+    const char* function_name;
+
     uint8_t     data_canary_start[SIZE_OF_CANARY];
     uint8_t     data_canary_end[SIZE_OF_CANARY];
     hash_type   data_hash;

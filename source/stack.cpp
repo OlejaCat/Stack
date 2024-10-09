@@ -15,10 +15,16 @@
 typedef struct Stack
 {
     uint8_t     struct_canary_start[SIZE_OF_CANARY];
+
     stack_type* data;
     size_t      size_of_element;
     size_t      size_of_data;
     size_t      max_size_of_data;
+
+    const char* file_name;
+    int         line;
+    const char* function_name;
+
     uint8_t     data_canary_start[SIZE_OF_CANARY];
     uint8_t     data_canary_end[SIZE_OF_CANARY];
     hash_type   data_hash;
@@ -37,11 +43,13 @@ static StackErrorOperation stackResize(Stack* stack, double scale_factor);
 // public --------------------------------------------------------------------------------------------------------------
 
 
-Stack* stackCtor()
+Stack* stackCtor_(const char* file_name,
+                  int         line,
+                  const char* function_name)
 {
     Stack* stack = (Stack*)calloc(1, sizeof(Stack));
 
-    generateCanary(stack->struct_canary_start);
+    generateCanaryRandom(stack->struct_canary_start);
 
     stack->data             = NULL;
     stack->size_of_element  = sizeof(stack_type);
@@ -49,10 +57,10 @@ Stack* stackCtor()
     stack->max_size_of_data = START_SIZE;
     stack->data_hash        = 0;
 
-    generateCanary(stack->data_canary_start);
-    generateCanary(stack->data_canary_end);
+    generateCanaryRandom(stack->data_canary_start);
+    generateCanaryRandom(stack->data_canary_end);
 
-    memcpy(stack->struct_canary_end, stack->struct_canary_start, SIZE_OF_CANARY);
+    memcpy(stack->struct_canary_start, stack->struct_canary_end, SIZE_OF_CANARY);
 
     stack_type* data_pointer = (stack_type*)canaryCalloc(START_SIZE,
                                                          stack->size_of_element,
@@ -63,7 +71,12 @@ Stack* stackCtor()
         return NULL;
     }
 
-    stack->data        = data_pointer;
+    stack->data = data_pointer;
+
+    stack->file_name     = file_name;
+    stack->line          = line;
+    stack->function_name = function_name;
+
     stack->struct_hash = calculateHash(stack, SIZE_OF_STACK_FOR_HASH);
 
     return stack;
@@ -96,7 +109,7 @@ StackErrorOperation stackPush(Stack *stack, stack_type item)
     }
 
     stack->data_hash   = calculateHash(stack->data, stack->size_of_element * stack->max_size_of_data);
-    stack->struct_hash = calculateHash(stack, SIZE_OF_STACK_FOR_HASH);
+    stack->struct_hash = calculateHash(stack,       SIZE_OF_STACK_FOR_HASH);
 
     STACK_ASSERT(stack, StackErrorOperation_ERROR_PUSH);
 
@@ -106,12 +119,12 @@ StackErrorOperation stackPush(Stack *stack, stack_type item)
 
 StackErrorOperation stackPop(Stack *stack, stack_type* item)
 {
+    STACK_ASSERT(stack, StackErrorOperation_ERROR_POP);
+
     if (stack->size_of_data == 0)
     {
         return StackErrorOperation_EMPTY_STACK;
     }
-
-    STACK_ASSERT(stack, StackErrorOperation_ERROR_POP);
 
     *item = stack->data[stack->size_of_data - 1];
 
@@ -124,7 +137,7 @@ StackErrorOperation stackPop(Stack *stack, stack_type* item)
     }
 
     stack->data_hash   = calculateHash(stack->data, stack->size_of_element * stack->max_size_of_data);
-    stack->struct_hash = calculateHash(stack, SIZE_OF_STACK_FOR_HASH);
+    stack->struct_hash = calculateHash(stack,       SIZE_OF_STACK_FOR_HASH);
 
     STACK_ASSERT(stack, StackErrorOperation_ERROR_POP);
 

@@ -15,10 +15,10 @@ const uint8_t CANARY[SIZE_OF_CANARY] = {'B', 'A', 'D', 'C', 'O', 'F', 'F', 'E'};
 // public --------------------------------------------------------------------------------------------------------------
 
 
-void* canaryCalloc(size_t   size_called,
-                   size_t   size_of_element,
-                   uint8_t* data_canary_start,
-                   uint8_t* data_canary_end)
+void* canaryCalloc_(size_t   size_called,
+                    size_t   size_of_element,
+                    uint8_t* data_canary_start,
+                    uint8_t* data_canary_end)
 {
     size_t size_to_calloc = size_called * size_of_element + 2 * SIZE_OF_CANARY;
 
@@ -40,11 +40,11 @@ void* canaryCalloc(size_t   size_called,
 }
 
 
-void* canaryRealloc(void*    address,
-                    size_t   original_size,
-                    size_t   called_size,
-                    uint8_t* data_canary_start,
-                    uint8_t* data_canary_end)
+void* canaryRealloc_(void*    address,
+                     size_t   original_size,
+                     size_t   called_size,
+                     uint8_t* data_canary_start,
+                     uint8_t* data_canary_end)
 {
     uint8_t* original_start = (uint8_t*)address - SIZE_OF_CANARY;
 
@@ -74,7 +74,7 @@ void freeCanary(void* address)
 }
 
 
-void generateCanaryRandom(uint8_t* canary)
+void generateCanaryRandom_(uint8_t* canary)
 {
     srand((unsigned int)time(0));
 
@@ -85,7 +85,7 @@ void generateCanaryRandom(uint8_t* canary)
 }
 
 
-void generateCanaryStatic(uint8_t* canary)
+void generateCanaryStatic_(uint8_t* canary)
 {
     for (size_t i = 0; i < SIZE_OF_CANARY; i++)
     {
@@ -94,10 +94,10 @@ void generateCanaryStatic(uint8_t* canary)
 }
 
 
-CanaryProtectionState checkDataCanaries(void*    data,
-                                        size_t   size_of_data,
-                                        uint8_t* canary_start,
-                                        uint8_t* canary_end)
+CanaryProtectionState checkDataCanaries_(void*    data,
+                                         size_t   size_of_data,
+                                         uint8_t* canary_start,
+                                         uint8_t* canary_end)
 {
     const uint8_t* raw_data = getRawData(data);
 
@@ -110,8 +110,8 @@ CanaryProtectionState checkDataCanaries(void*    data,
     return CanaryProtectionState_OK;
 }
 
-CanaryProtectionState checkStructCanaries(uint8_t* canary_start,
-                                          uint8_t* canary_end)
+CanaryProtectionState checkStructCanaries_(uint8_t* canary_start,
+                                           uint8_t* canary_end)
 {
     if (memcmp(canary_start, canary_end, SIZE_OF_CANARY) != 0)
     {
