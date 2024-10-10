@@ -89,7 +89,10 @@ Stack* stackCtor_(const char* file_name,
 
 StackErrorOperation stackDtor(Stack *stack)
 {
-    STACK_ASSERT(stack, StackErrorOperation_ERROR_DTOR);
+    if (stack == NULL)
+    {
+        return StackErrorOperation_ERROR_DTOR;
+    }
 
     freeCanary(stack->data);
     free(stack);
