@@ -46,6 +46,14 @@
     realloc(start, size_need);
 #endif
 
+#ifdef _CANARY_PROTECT
+#define freeCanary(pointer) \
+    freeCanary_(pointer);
+#else
+#define freeCanary(pointer) \
+    free(pointer);
+#endif
+
 typedef enum CanaryProtectionState
 {
     CanaryProtectionState_OK        = 0,
@@ -54,7 +62,7 @@ typedef enum CanaryProtectionState
 
 static const size_t SIZE_OF_CANARY = 8;
 
-void freeCanary(void* address);
+void freeCanary_(void* address);
 
 void* canaryCalloc_(size_t   size_called,
                     size_t   size_of_element,

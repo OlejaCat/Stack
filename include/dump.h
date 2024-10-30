@@ -4,26 +4,41 @@
 #include "stack.h"
 #include "my_asserts.h"
 
-#define STACK_ASSERT(stack, error) \
-    if (stackAssertFunction(stack, error, __FILE__, __LINE__, __PRETTY_FUNCTION__) != EXIT_SUCCESS) \
+#define STACK_ASSERT(stack_struct, error, information_about_file) \
+    if (stackErrorProcess(stack_struct, error, #stack_struct, \
+        information_about_file) != EXIT_SUCCESS) \
     { \
-      assertStrict(0 && "Out");  \
+      abortWithMessage("Something went wrong with stack check dump.txt for info");  \
       return error;  \
     }
 
+#define writeStackDumpLog(stack_struct) \
+    writeStackDumpLog_(stack_struct, StackError_SUCCESS, StackErrorOperation_SUCCESS, #stack_struct, \
+                       {NULL, 0, NULL});
+
 typedef enum StackError
 {
-    StackError_SUCCESS         = 0,
-    StackError_BAD_STACK       = 1,
-    StackError_NULL_POINTER    = 2,
-    StackError_SIZE_OUT_BOUNDS = 3,
+    StackError_ERROR              = -1,
+    StackError_SUCCESS            =  0,
+    StackError_BAD_STRUCT_CANARY  =  1,
+    StackError_BAD_STRUCT_HASH    =  2,
+    StackError_BAD_DATA_CANARY    =  3,
+    StackError_BAD_DATA_HASH      =  4,
+    StackError_DATA_NULL_POINTER  =  5,
+    StackError_STACK_NULL_POINTER =  6,
+    StackError_SIZE_OUT_BOUNDS    =  7,
+    StackError_UNKNOWN            =  8,
 } StackError;
 
+int stackErrorProcess(Stack*              stack,
+                      StackErrorOperation operation_error,
+                      const char*         stack_variable_name,
+                      CallData            call_data);
 
-int stackAssertFunction(Stack*              stack,
-                        StackErrorOperation operation_error,
-                        const char*         file_name,
-                        const int           line_number,
-                        const char*         function_name);
+int writeStackDumpLog_(Stack*              stack,
+                       StackError          stack_error,
+                       StackErrorOperation stack_error_operation,
+                       const char*         stack_variable_name,
+                       CallData            call_data);
 
 #endif // DUMP_H

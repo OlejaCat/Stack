@@ -4,7 +4,14 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-typedef uint8_t stack_type;
+typedef double stack_type;
+
+typedef struct CallData
+{
+    const char* file_name;
+    const int   line_number;
+    const char* function_name;
+} CallData;
 
 typedef enum StackErrorOperation
 {
@@ -19,13 +26,27 @@ typedef enum StackErrorOperation
 
 typedef struct Stack Stack;
 
-#define stackCtor() stackCtor_(__FILE__, __LINE__, __PRETTY_FUNCTION__)
+#define stackCtor() stackCtor_({__FILE__, __LINE__, __PRETTY_FUNCTION__})
 
-Stack* stackCtor_(const char* file_name,
-                  int         line,
-                  const char* function_name);
-StackErrorOperation stackDtor(Stack* stack);
-StackErrorOperation stackPush(Stack* stack, stack_type item);
-StackErrorOperation stackPop(Stack* stack, stack_type* item);
+#define stackDtor(stack_struct) stackDtor_(stack_struct)
+
+#define stackPush(stack_struct, item_to_push) stackPush_(stack_struct, item_to_push, \
+                                                         {__FILE__, __LINE__, __PRETTY_FUNCTION__})
+
+#define stackPop(stack_struct, item_to_pop) stackPop_(stack_struct, item_to_pop, \
+                                                      {__FILE__, __LINE__, __PRETTY_FUNCTION__})
+
+Stack* stackCtor_(CallData call_data);
+
+StackErrorOperation stackDtor_(Stack*   stack,
+                               CallData call_data);
+
+StackErrorOperation stackPush_(Stack*     stack,
+                               stack_type item,
+                               CallData   call_data);
+
+StackErrorOperation stackPop_(Stack*      stack,
+                              stack_type* item,
+                              CallData    call_data);
 
 #endif // STACK_H

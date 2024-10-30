@@ -66,7 +66,7 @@ void* canaryRealloc_(void*    address,
     return data_pointer;
 }
 
-void freeCanary(void* address)
+void freeCanary_(void* address)
 {
     uint8_t* original_address = (uint8_t*)address - SIZE_OF_CANARY;
 
