@@ -38,8 +38,7 @@ typedef struct Stack Stack;
 
 Stack* stackCtor_(CallData call_data);
 
-StackErrorOperation stackDtor_(Stack*   stack,
-                               CallData call_data);
+StackErrorOperation stackDtor_(Stack*   stack);
 
 StackErrorOperation stackPush_(Stack*     stack,
                                stack_type item,

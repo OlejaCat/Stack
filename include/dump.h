@@ -14,7 +14,7 @@
 
 #define writeStackDumpLog(stack_struct) \
     writeStackDumpLog_(stack_struct, StackError_SUCCESS, StackErrorOperation_SUCCESS, #stack_struct, \
-                       {NULL, 0, NULL});
+                       {"", -1, ""});
 
 typedef enum StackError
 {

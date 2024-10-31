@@ -98,7 +98,7 @@ int writeStackDumpLog_(Stack*              stack,
         return EXIT_FAILURE;
     }
 
-    fprintf(output_file, "Stack variable <%s> %s:%d in function: %s\n",
+    fprintf(output_file, "Stack variable \"%s\"\nCreated in %s:%d, function: %s\n",
                          stack_variable_name,
                          stack->file_name,
                          stack->line,
@@ -110,16 +110,13 @@ int writeStackDumpLog_(Stack*              stack,
         return EXIT_SUCCESS;
     }
 
-    if (stack_error == StackError_SUCCESS
-     || call_data.function_name == NULL
-     || call_data.line_number   == -1
-     || call_data.function_name == NULL)
+    if (stack_error == StackError_SUCCESS)
     {
-        fprintf(output_file, "No problems with the stack were found");
+        fprintf(output_file, "No problems with the stack were found.\n\n");
     }
     else
     {
-    fprintf(output_file, "Error code: %s: %s:%d In function: %s. Operation code error: %s",
+    fprintf(output_file, "Error code: %s: %s:%d In function: %s. Operation code error: %s\n\n",
                          stringifyStackError(stack_error),
                          call_data.file_name,
                          call_data.line_number,
@@ -132,19 +129,19 @@ int writeStackDumpLog_(Stack*              stack,
 #ifdef _CANARY_PROTECT
     fprintf(output_file, "\tstruct_canary_start [%p]\n", stack->struct_canary_start);
 #endif
-    fprintf(output_file, "\tsize_of_element  = [%lu]\n", stack->size_of_element);
-    fprintf(output_file, "\tsize_of_data     = [%lu]\n", stack->size_of_data);
-    fprintf(output_file, "\tmax_size_of_data = [%lu]\n", stack->max_size_of_data);
+    fprintf(output_file, "\tsize_of_element   = %lu\n", stack->size_of_element);
+    fprintf(output_file, "\tsize_of_data      = %lu\n", stack->size_of_data);
+    fprintf(output_file, "\tmax_size_of_data  = %lu\n", stack->max_size_of_data);
 #ifdef _CANARY_PROTECT
-    fprintf(output_file, "\tdata_canary_start [%p]\n"  , stack->data_canary_start);
-    fprintf(output_file, "\tdata_canary_end [%p]\n"    , stack->data_canary_end);
+    fprintf(output_file, "\tdata_canary_start   [%p]\n"  , stack->data_canary_start);
+    fprintf(output_file, "\tdata_canary_end     [%p]\n"    , stack->data_canary_end);
 #endif
 #ifdef _HASH_PROTECT
-    fprintf(output_file, "\tdata_hash        = %llu\n" , stack->data_hash);
-    fprintf(output_file, "\tstruct_hash      = %llu\n" , stack->struct_hash);
+    fprintf(output_file, "\tdata_hash         = %llu\n" , stack->data_hash);
+    fprintf(output_file, "\tstruct_hash       = %llu\n" , stack->struct_hash);
 #endif
 #ifdef _CANARY_PROTECT
-    fprintf(output_file, "\tstruct_canary_end [%p]\n\n", stack->struct_canary_end);
+    fprintf(output_file, "\tstruct_canary_end   [%p]\n\n", stack->struct_canary_end);
 #endif
 
     if (stack->data == NULL || stack->size_of_data > stack->max_size_of_data)
@@ -153,11 +150,16 @@ int writeStackDumpLog_(Stack*              stack,
     }
     else
     {
-        fprintf(output_file, "Data [%p]", stack->data);
+        fprintf(output_file, "Data [%p]\n", stack->data);
+
+        if (stack->size_of_data == 0)
+        {
+            fprintf(output_file, "\tStack is empty\n");
+        }
 
         for (size_t index = 0; index < stack->size_of_data; index++)
         {
-            fprintf(output_file, "\t%lu: [%p]", index, stack->data + index * stack->size_of_element);
+            fprintf(output_file, "\t%lu: [%p]\n", index, stack->data + index * stack->size_of_element);
         }
     }
 
