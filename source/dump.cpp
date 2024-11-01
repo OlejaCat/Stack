@@ -159,7 +159,10 @@ int writeStackDumpLog_(Stack*              stack,
 
         for (size_t index = 0; index < stack->size_of_data; index++)
         {
-            fprintf(output_file, "\t%lu: [%p]\n", index, stack->data + index * stack->size_of_element);
+            fprintf(output_file, "\t%lu: %lg [%p]\n",
+                    index,
+                    stack->data[index],
+                    stack->data + index * stack->size_of_element);
         }
     }
 
